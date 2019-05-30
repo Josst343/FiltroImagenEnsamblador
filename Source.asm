@@ -8,7 +8,7 @@ CreateFileA PROTO, :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 WriteFile PROTO, :DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 ReadFile PROTO, :DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 .data 
-nombre db "imagen16Mono.raw",0
+nombre db "imagen16MonoEscalada.raw",0
 nombre1 db "imgPruebaBin.raw",0
 handle dd ?
 conts db 16 dup(9)
@@ -123,3 +123,4 @@ leerArchivo proc
 	call ReadFile
 ret
 leerArchivo endp
+END
