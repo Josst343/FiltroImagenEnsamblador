@@ -8,15 +8,15 @@ CreateFileA PROTO, :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 WriteFile PROTO, :DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 ReadFile PROTO, :DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 .data 
-nombre db "imagen16MonoEscalada.raw",0
+nombre db "imgPruebaMono32F.raw",0
 nombre1 db "imgPruebaBin.raw",0
 handle dd ?
-conts db 16 dup(9)
-imagen dd 213000 dup(?)
-imagenProm dd 213000 dup(?)
-
-cc1 dd 86
-cc2 dd 297
+conts dd 4 dup(9.0)
+imagen dw 426000 dup(?)
+imagenProm dw 426000 dup(?)
+cc1 dd 88
+cc2 dd 300
+nueve dw 9
 
 .code
 main PROC
@@ -32,33 +32,39 @@ main PROC
 	mov ECX,cc1	
 	cicloFilas:
 	mov EBX,EDI
+	mov esi,ebx
+	
 	MOVUPS XMM5,OWORD PTR conts
-	MOVups xmm0,OWORD PTR imagen[EBX*8]
-	MOVUPS xmm1,OWORD PTR imagen[EBX*8+1]
-	MOVUPS XMM2,OWORD PTR imagen[EBX*8+2]
-	addps  xmm0 ,  xmm1 
-	ADDPS XMM0,XMM2
+	MOVUPS xmm0,OWORD PTR imagen[EBX*4]
+	MOVUPS xmm1,OWORD PTR imagen[EBX*4+4]
+	ADDPS xmm0,xmm1
+	MOVUPS XMM1,OWORD PTR imagen[EBX*4+8]
+	addps  xmm0 ,xmm1 
 	ADD EBX,710	
-	MOVUPS XMM3, OWORD PTR imagen[EBX*8]
-	MOVUPS XMM1,OWORD PTR imagen[EBX*8+1]
-	MOVUPS XMM2,OWORD PTR imagen[EBX*8+2]	
-	ADDPS XMM0,XMM3
-	ADDPS XMM0,XMM2
+	MOVUPS XMM1, OWORD PTR imagen[EBX*4]
+	ADDPS XMM0,XMM1
+	MOVUPS XMM1,OWORD PTR imagen[EBX*4+4]
+	ADDPS XMM0,XMM1
+	MOVUPS XMM1,OWORD PTR imagen[EBX*4+8]	
 	ADDPS XMM0,XMM1
 	ADD EBX,1420
-	MOVUPS XMM3, OWORD PTR imagen[EBX*8]
-	MOVUPS XMM1,OWORD PTR imagen[EBX*8+1]
-	MOVUPS XMM2,OWORD PTR imagen[EBX*8+2]
-	ADDPS XMM0,XMM3
-	ADDPS XMM0,XMM2
+	MOVUPS XMM1, OWORD PTR imagen[EBX*4]
 	ADDPS XMM0,XMM1
-	DIVPS XMM0,XMM5
-
-	MOVUPS OWORD PTR imagenProm[EDI*8],XMM0
+	MOVUPS XMM1,OWORD PTR imagen[EBX*4+4]
+	ADDPS XMM0,XMM1
+	MOVUPS XMM1,OWORD PTR imagen[EBX*4+8]
+	ADDPS XMM0,XMM1
+	DIVPS XMM0,XMM1
+	
+	MOVUPS OWORD PTR imagenProm[EDI*4],XMM0
+	
+	inc EDI
+	inc EDI
+	inc EDI
 	inc EDI
 	DEC ECX
 	JNE cicloFilas
-	;en lugar de usar loop usar decremento con salto condicional ""go to
+
 	;loop cicloFilas	
 	pop ECX
 	;loop cicloColumnas
@@ -71,9 +77,8 @@ main PROC
 INVOKE ExitProcess,0
 main ENDP
 
-promedio proc
 
-promedio endp
+
 creaArchivo proc
 	push 0
 	push 20H
@@ -105,7 +110,7 @@ abrirArchivo endp
 escribirArchivo proc
 	push 0
 	push 0
-	push 213000 ;Numero de caracteres a escribir
+	push 426000 ;Numero de caracteres a escribir
 	push offset imagenProm
 	push handle
 	call WriteFile
@@ -117,7 +122,7 @@ leerArchivo proc
 	call abrirArchivo
 	push 0
 	push 0
-	push 213000
+	push 426000
 	push offset imagen
 	push handle
 	call ReadFile
